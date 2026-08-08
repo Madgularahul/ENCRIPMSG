@@ -3,7 +3,6 @@ const router = express.Router();
 const crypto = require('crypto');
 
 // In-memory P2P active room signaling store
-// { roomId: { roomId, algorithm, status: 'WAITING'|'REQUESTED'|'APPROVED'|'REJECTED', requesterName, encryptedContent } }
 const p2pRooms = new Map();
 
 // Clean up old rooms (older than 30 mins)
@@ -37,9 +36,9 @@ router.post('/create-room', (req, res) => {
   const newRoom = {
     roomId,
     algorithm: algorithm || 'AES-256',
-    status: 'WAITING', // WAITING -> REQUESTED -> APPROVED / REJECTED
+    status: 'WAITING',
     requesterName: null,
-    messages: [], // 2-way encrypted chat messages
+    messages: [],
     createdAt: Date.now()
   };
 
@@ -123,7 +122,7 @@ router.post('/approve-request', (req, res) => {
   });
 });
 
-// 5. Send 2-Way Encrypted Chat Message (Used by both Sender and Receiver)
+// 5. Send 2-Way Encrypted Chat Message
 router.post('/send-chat-msg', (req, res) => {
   const { roomId, senderRole, encryptedContent } = req.body;
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CreateMessagePage from './components/CreateMessagePage';
 import ViewMessagePage from './components/ViewMessagePage';
-import P2PHandshakePage from './components/P2PHandshakePage';
+import P2PHandshakePage from '../../experiments/P2PHandshakePage';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('create'); // 'create', 'view', 'p2p'
@@ -30,7 +30,7 @@ export default function App() {
     <div className="container">
       <header>
         <h1>EncripMsg</h1>
-        <p>Encrypted Text Sharing Platform & Live P2P Handshake</p>
+        <p>Encrypted Text Sharing Platform (AES-256, Triple-DES, Vigenère)</p>
       </header>
 
       {/* Navigation Tabs */}
@@ -39,19 +39,20 @@ export default function App() {
           className={`nav-button ${activeTab === 'create' ? 'active' : ''}`}
           onClick={() => setActiveTab('create')}
         >
-          1. Create Msg (DB Mode)
+          1. Create Message
         </button>
         <button
           className={`nav-button ${activeTab === 'view' ? 'active' : ''}`}
           onClick={() => setActiveTab('view')}
         >
-          2. View Msg (DB Mode)
+          2. Search & View Message
         </button>
         <button
           className={`nav-button ${activeTab === 'p2p' ? 'active' : ''}`}
           onClick={() => setActiveTab('p2p')}
+          style={{ backgroundColor: activeTab === 'p2p' ? '#6f42c1' : '#f3e8ff', color: activeTab === 'p2p' ? '#fff' : '#6f42c1', borderColor: '#6f42c1' }}
         >
-          3. Live P2P Handshake (Sender ↔ Receiver)
+          🧪 P2P Mode (Experiment)
         </button>
       </div>
 

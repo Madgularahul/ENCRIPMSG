@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { encryptText, decryptText } from '../utils/crypto';
+import { encryptText, decryptText } from '../client/src/utils/crypto';
 
 export default function P2PHandshakePage() {
-  const [role, setRole] = useState('host'); // 'host' (Sender) or 'guest' (Receiver)
+  const [role, setRole] = useState('host');
 
-  // Shared state
   const [algorithm, setAlgorithm] = useState('AES-256');
   const [secretKey, setSecretKey] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessageText, setNewMessageText] = useState('');
 
-  // Host state (Sender)
   const [hostMessage, setHostMessage] = useState('');
   const [senderName, setSenderName] = useState('Sender Device');
   const [roomId, setRoomId] = useState('');
@@ -19,13 +17,11 @@ export default function P2PHandshakePage() {
   const [requesterInfo, setRequesterInfo] = useState('');
   const [hostNotification, setHostNotification] = useState('');
 
-  // Guest state (Receiver)
   const [guestRoomId, setGuestRoomId] = useState('');
   const [guestName, setGuestName] = useState('Receiver Device');
   const [guestStatus, setGuestStatus] = useState('');
   const [guestError, setGuestError] = useState('');
 
-  // Check URL for ?p2proom=ID
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const p2proom = params.get('p2proom');
@@ -38,7 +34,6 @@ export default function P2PHandshakePage() {
   const activeRoomId = role === 'host' ? roomId : guestRoomId;
   const isApproved = (role === 'host' && roomStatus === 'APPROVED') || (role === 'guest' && guestStatus === 'APPROVED');
 
-  // Poll room status and messages when active
   useEffect(() => {
     let interval = null;
     if (activeRoomId && (roomActive || guestStatus)) {
@@ -61,7 +56,6 @@ export default function P2PHandshakePage() {
               }
             }
 
-            // Sync messages list
             if (data.messages) {
               setChatMessages(data.messages);
             }
@@ -74,7 +68,6 @@ export default function P2PHandshakePage() {
     return () => clearInterval(interval);
   }, [activeRoomId, roomActive, guestStatus, role]);
 
-  // HOST ACTIONS (Sender)
   const handleStartHostRoom = async (e) => {
     e.preventDefault();
     if (!hostMessage.trim() || !secretKey.trim()) {
@@ -134,7 +127,6 @@ export default function P2PHandshakePage() {
     }
   };
 
-  // GUEST ACTIONS (Receiver)
   const handleRequestAccess = async (e) => {
     e.preventDefault();
     setGuestError('');
@@ -164,7 +156,6 @@ export default function P2PHandshakePage() {
     }
   };
 
-  // SEND 2-WAY ENCRYPTED CHAT MESSAGE
   const handleSendChatMessage = async (e) => {
     e.preventDefault();
     if (!newMessageText.trim()) return;
@@ -198,7 +189,6 @@ export default function P2PHandshakePage() {
     }
   };
 
-  // Decrypt helper for chat item
   const renderDecryptedText = (encryptedContent) => {
     if (!secretKey.trim()) {
       return <em style={{ color: '#888' }}>🔒 Encrypted (Enter secret key below to unlock)</em>;
@@ -212,9 +202,9 @@ export default function P2PHandshakePage() {
 
   return (
     <div>
-      <h2>Mode 2: 2-Way Live Handshake Chat</h2>
+      <h2>🧪 Experimental Feature: 2-Way Live Handshake Chat</h2>
       <p style={{ color: '#666', marginBottom: '20px' }}>
-        Receiver requests access. Once Sender approves, a <strong>live 2-way encrypted chat window</strong> opens where both devices can send client-encrypted messages back and forth!
+        This is an experimental feature located in <code>/experiments</code>. Receiver requests access. Once Sender approves, a live 2-way encrypted chat window opens!
       </p>
 
       {/* Role Toggle Switch */}
@@ -233,7 +223,6 @@ export default function P2PHandshakePage() {
         </button>
       </div>
 
-      {/* 2-WAY LIVE CHAT WINDOW (Rendered for both once Approved) */}
       {isApproved ? (
         <div className="result-card" style={{ border: '2px solid #28a745' }}>
           <div className="alert alert-success">
@@ -242,7 +231,6 @@ export default function P2PHandshakePage() {
 
           <p><strong>Room ID:</strong> <span className="badge">{activeRoomId}</span></p>
 
-          {/* Secret Key Bar */}
           <div className="form-group" style={{ backgroundColor: '#fff3cd', padding: '10px', borderRadius: '4px', marginTop: '10px' }}>
             <label>Shared Secret Decryption Key:</label>
             <input
@@ -254,7 +242,6 @@ export default function P2PHandshakePage() {
             />
           </div>
 
-          {/* Chat Messages Feed */}
           <div style={{
             height: '250px',
             overflowY: 'auto',
@@ -268,7 +255,7 @@ export default function P2PHandshakePage() {
               <p style={{ textAlign: 'center', color: '#888', marginTop: '100px' }}>No messages yet in chat.</p>
             ) : (
               chatMessages.map((msg) => {
-                const isMe = (role === 'host' && msg.sender === 'Sender') || (role === 'guest' && msg.sender !== 'Sender');
+                const isMe = (role === 'host' && msg.sender === (senderName || 'Sender Device')) || (role === 'guest' && msg.sender === (guestName || 'Receiver Device'));
                 return (
                   <div
                     key={msg.id}
@@ -298,7 +285,6 @@ export default function P2PHandshakePage() {
             )}
           </div>
 
-          {/* Chat Input Form */}
           <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '2px solid #007bff' }}>
             <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>
               Type New Message (Auto-Encrypted):
@@ -319,9 +305,7 @@ export default function P2PHandshakePage() {
           </div>
         </div>
       ) : (
-        /* PRE-APPROVAL HANDSHAKE SCREENS */
         <div>
-          {/* ROLE A: SENDER (Host) */}
           {role === 'host' && (
             <div className="result-card">
               <h3>Sender Device (Host)</h3>
@@ -398,7 +382,6 @@ export default function P2PHandshakePage() {
                     </div>
                   )}
 
-                  {/* Incoming Handshake Request Notification */}
                   {roomStatus === 'REQUESTED' && (
                     <div className="alert alert-danger" style={{ marginTop: '20px', border: '2px solid #dc3545' }}>
                       <h4>🔔 Incoming Access Request!</h4>
@@ -427,7 +410,6 @@ export default function P2PHandshakePage() {
             </div>
           )}
 
-          {/* ROLE B: RECEIVER (Guest) */}
           {role === 'guest' && (
             <div className="result-card">
               <h3>Receiver Device (Guest)</h3>
