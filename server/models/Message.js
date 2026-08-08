@@ -21,7 +21,8 @@ const messageSchema = new mongoose.Schema({
   },
   expiresAt: {
     type: Date,
-    default: null
+    default: null,
+    index: { expires: 0 } // Native MongoDB TTL index: automatically deletes document when expiresAt date is reached
   },
   maxViews: {
     type: Number,
