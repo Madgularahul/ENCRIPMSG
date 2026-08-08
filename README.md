@@ -37,6 +37,25 @@ ENCRIPMSG/
     └── package.json
 ```
 
+## API Endpoints Summary
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/messages` | Encrypt & save message payload (supports custom ID & expiration) |
+| `GET` | `/api/messages/:id` | Fetch encrypted payload by ID (increments view count & handles expiration) |
+| `GET` | `/api/health` | System status check (DB connection status) |
+| `POST` | `/api/p2p/create-room` | *[Experimental]* Create live P2P handshake room |
+| `POST` | `/api/p2p/request-access` | *[Experimental]* Send handshake access request |
+| `GET` | `/api/p2p/room-status/:id` | *[Experimental]* Check P2P room status & 2-way messages |
+| `POST` | `/api/p2p/approve-request` | *[Experimental]* Approve P2P connection request |
+| `POST` | `/api/p2p/send-chat-msg` | *[Experimental]* Post encrypted chat message to room |
+
+## Security Specifications
+
+- **Zero-Knowledge Architecture**: The server and database only store AES-256 / Triple-DES ciphertext. Plaintext and secret keys are never transmitted over the network.
+- **Client-Side Cryptography**: Cryptographic operations occur exclusively inside the client's web browser using `crypto-js`.
+- **Automatic Fallback**: Includes an in-memory database store so the app functions instantly even without an active MongoDB service.
+
 ## Quick Start
 
 ### 1. Install Dependencies
