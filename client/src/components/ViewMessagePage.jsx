@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { decryptText } from '../utils/crypto';
+import { API_BASE_URL } from '../config';
 
 export default function ViewMessagePage({ initialMessageId }) {
   const [messageId, setMessageId] = useState(initialMessageId || '');
@@ -33,7 +34,7 @@ export default function ViewMessagePage({ initialMessageId }) {
 
     try {
       setFetching(true);
-      const response = await fetch(`/api/messages/${targetId.trim()}`);
+      const response = await fetch(`${API_BASE_URL}/api/messages/${targetId.trim()}`);
       const data = await response.json();
 
       if (!response.ok) {

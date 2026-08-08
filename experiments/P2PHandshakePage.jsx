@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { encryptText, decryptText } from '../client/src/utils/crypto';
+import { API_BASE_URL } from '../client/src/config';
 
 export default function P2PHandshakePage() {
   const [role, setRole] = useState('host');
@@ -39,7 +40,7 @@ export default function P2PHandshakePage() {
     if (activeRoomId && (roomActive || guestStatus)) {
       interval = setInterval(async () => {
         try {
-          const res = await fetch(`/api/p2p/room-status/${activeRoomId}`);
+          const res = await fetch(`${API_BASE_URL}/api/p2p/room-status/${activeRoomId}`);
           const data = await res.json();
           if (res.ok) {
             if (role === 'host') {
@@ -76,7 +77,7 @@ export default function P2PHandshakePage() {
     }
 
     try {
-      const res = await fetch('/api/p2p/create-room', {
+      const res = await fetch(`${API_BASE_URL}/api/p2p/create-room`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ algorithm })
@@ -102,7 +103,7 @@ export default function P2PHandshakePage() {
         encryptedContent = encryptText(hostMessage, secretKey, algorithm);
       }
 
-      const res = await fetch('/api/p2p/approve-request', {
+      const res = await fetch(`${API_BASE_URL}/api/p2p/approve-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -137,7 +138,7 @@ export default function P2PHandshakePage() {
     }
 
     try {
-      const res = await fetch('/api/p2p/request-access', {
+      const res = await fetch(`${API_BASE_URL}/api/p2p/request-access`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -168,7 +169,7 @@ export default function P2PHandshakePage() {
       const encryptedContent = encryptText(newMessageText, secretKey, algorithm);
       const senderRoleName = role === 'host' ? (senderName || 'Sender Device') : (guestName || 'Receiver Device');
 
-      const res = await fetch('/api/p2p/send-chat-msg', {
+      const res = await fetch(`${API_BASE_URL}/api/p2p/send-chat-msg`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

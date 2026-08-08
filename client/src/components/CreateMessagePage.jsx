@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { encryptText } from '../utils/crypto';
+import { API_BASE_URL } from '../config';
 
 export default function CreateMessagePage({ onNavigateToView }) {
   const [text, setText] = useState('');
@@ -45,7 +46,7 @@ export default function CreateMessagePage({ onNavigateToView }) {
       const encryptedContent = encryptText(text, secretKey, algorithm);
 
       // Step 2: Post encrypted payload to Node/Express backend
-      const response = await fetch('/api/messages', {
+      const response = await fetch(`${API_BASE_URL}/api/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
